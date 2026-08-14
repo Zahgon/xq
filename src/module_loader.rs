@@ -23,17 +23,9 @@ pub trait ModuleLoader {
 
 pub struct PreludeLoader();
 impl ModuleLoader for PreludeLoader {
-    fn prelude(&self) -> Result<Vec<Program>> {
-        let prelude = include_str!("../prelude.jq");
-        let parsed = parse_program(prelude)?;
-        Ok(vec![parsed])
-    }
+    fn prelude(&self) -> Result<Vec<Program>> { panic!("STUB: not implemented") }
 
-    fn load_values(&self, path: &str, _search: Option<Vec<String>>) -> Result<Vec<Value>> {
-        Err(NotFoundError(path.to_string()))
-    }
+    fn load_values(&self, path: &str, _search: Option<Vec<String>>) -> Result<Vec<Value>> { panic!("STUB: not implemented") }
 
-    fn load_program(&self, path: &str, _search: Option<Vec<String>>) -> Result<Program> {
-        Err(NotFoundError(path.to_string()))
-    }
+    fn load_program(&self, path: &str, _search: Option<Vec<String>>) -> Result<Program> { panic!("STUB: not implemented") }
 }

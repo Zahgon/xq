@@ -59,29 +59,17 @@ macro_rules! as_math_fn3 {
     };
 }
 
-pub(crate) fn nan(_: Value) -> Result<Value> {
-    Ok(Number::nan().into())
-}
+pub(crate) fn nan(_: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-pub(crate) fn infinite(_: Value) -> Result<Value> {
-    Ok(Number::infinity().into())
-}
+pub(crate) fn infinite(_: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-pub(crate) fn is_nan(v: Number) -> Result<bool> {
-    Ok(v.is_nan())
-}
+pub(crate) fn is_nan(v: Number) -> Result<bool> { panic!("STUB: not implemented") }
 
-pub(crate) fn is_normal(v: Number) -> Result<bool> {
-    Ok(v.is_normal())
-}
+pub(crate) fn is_normal(v: Number) -> Result<bool> { panic!("STUB: not implemented") }
 
-pub(crate) fn is_infinite(v: Number) -> Result<bool> {
-    Ok(v.is_infinite())
-}
+pub(crate) fn is_infinite(v: Number) -> Result<bool> { panic!("STUB: not implemented") }
 
-pub(crate) fn exp10(v: Number) -> Result<Number> {
-    Ok(Number::from(10).powf(v))
-}
+pub(crate) fn exp10(v: Number) -> Result<Number> { panic!("STUB: not implemented") }
 
 macro_rules! pub_math_fn {
     ($($name: ident),*) => {
@@ -98,13 +86,9 @@ pub_math_fn!(
     asinh, acosh, atanh, exp, exp2, exp_m1, ln, log2, log10
 );
 
-pub(crate) fn fmax(v: Number, w: Number) -> Result<Number> {
-    Ok(Float::max(v, w))
-}
+pub(crate) fn fmax(v: Number, w: Number) -> Result<Number> { panic!("STUB: not implemented") }
 
-pub(crate) fn fmin(v: Number, w: Number) -> Result<Number> {
-    Ok(Float::min(v, w))
-}
+pub(crate) fn fmin(v: Number, w: Number) -> Result<Number> { panic!("STUB: not implemented") }
 
 macro_rules! pub_math_fn2 {
     ($($name: ident),*) => {
@@ -118,6 +102,4 @@ macro_rules! pub_math_fn2 {
 
 pub_math_fn2!(copysign, atan2, hypot, powf);
 
-pub(crate) fn fma(v: Number, w: Number, x: Number) -> Result<Number> {
-    Ok(v.mul_add(w, x))
-}
+pub(crate) fn fma(v: Number, w: Number, x: Number) -> Result<Number> { panic!("STUB: not implemented") }

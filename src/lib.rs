@@ -43,18 +43,4 @@ where
     C: Iterator<Item = Result<Value, InputError>>,
     I: Iterator<Item = Result<Value, InputError>>,
     M: ModuleLoader,
-{
-    // let now = std::time::Instant::now();
-    let parsed = xq_lang::parse_program(query)?;
-    log::info!("Parsed query = {:?}", parsed);
-    // eprintln!("Parse: {:?}", now.elapsed());
-    // let now = std::time::Instant::now();
-
-    let mut compiler = Compiler::new();
-    let program = compiler.compile(&parsed, module_loader)?;
-    log::info!("Compiled program = {:?}", program);
-    // eprintln!("Compile: {:?}", now.elapsed());
-
-    let mut vm = Machine::new(program);
-    Ok(vm.start(context, input))
-}
+{ panic!("STUB: not implemented") }

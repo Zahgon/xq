@@ -13,13 +13,9 @@ use crate::Value;
 pub(crate) struct Address(pub(crate) usize);
 
 impl Address {
-    fn next(&mut self) {
-        self.0 -= 1;
-    }
+    fn next(&mut self) { panic!("STUB: not implemented") }
 
-    pub(crate) fn get_next(&self) -> Self {
-        Self(self.0 - 1)
-    }
+    pub(crate) fn get_next(&self) -> Self { panic!("STUB: not implemented") }
 }
 
 #[derive(Debug, Copy, Clone, Hash, Ord, PartialOrd, Eq, PartialEq)]

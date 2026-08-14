@@ -12,65 +12,20 @@ pub(crate) struct PStack<T, B = [T; 32]> {
 }
 
 impl<T, B> Default for PStack<T, B> {
-    fn default() -> Self {
-        Self {
-            prev: None,
-            current: sized_chunks::InlineArray::new(),
-        }
-    }
+    fn default() -> Self { panic!("STUB: not implemented") }
 }
 
 #[allow(dead_code)]
 impl<T: Clone, B> PStack<T, B> {
-    pub fn new() -> Self {
-        Default::default()
-    }
+    pub fn new() -> Self { panic!("STUB: not implemented") }
 
-    pub fn push(&mut self, value: T) {
-        if self.current.is_full() {
-            let built = std::mem::take(self);
-            self.prev = Some(Rc::new(built));
-        }
-        self.current.push(value)
-    }
+    pub fn push(&mut self, value: T) { panic!("STUB: not implemented") }
 
-    pub fn pop(&mut self) -> Option<T> {
-        let ret = self.current.pop();
-        if ret.is_some() {
-            ret
-        } else if let Some(p) = self.prev.take() {
-            let p: &PStack<_, _> = p.borrow();
-            self.prev = p.prev.clone();
-            self.current.clone_from(&p.current);
-            self.current.pop()
-        } else {
-            None
-        }
-    }
+    pub fn pop(&mut self) -> Option<T> { panic!("STUB: not implemented") }
 
-    pub fn top(&self) -> Option<&T> {
-        if self.current.is_empty() {
-            return if let Some(p) = &self.prev {
-                p.current.last()
-            } else {
-                None
-            };
-        }
-        self.current.last()
-    }
+    pub fn top(&self) -> Option<&T> { panic!("STUB: not implemented") }
 
-    pub fn top_mut(&mut self) -> Option<&mut T> {
-        if self.current.is_empty() {
-            if let Some(p) = self.prev.take() {
-                let p: &PStack<_, _> = p.borrow();
-                self.prev = p.prev.clone();
-                self.current.clone_from(&p.current);
-            } else {
-                return None;
-            }
-        }
-        self.current.last_mut()
-    }
+    pub fn top_mut(&mut self) -> Option<&mut T> { panic!("STUB: not implemented") }
 }
 
 #[cfg(test)]

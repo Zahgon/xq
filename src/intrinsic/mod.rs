@@ -127,341 +127,48 @@ static INTRINSICS3: phf::Map<&'static str, NamedFn3> = phf_map! {
 
 pub(crate) fn lookup_intrinsic_fn(
     FunctionIdentifier(ident, n_args): &FunctionIdentifier,
-) -> Option<(ByteCode, Vec<ArgType>)> {
-    if *n_args == 0 {
-        INTRINSICS0
-            .get(&ident.0)
-            .cloned()
-            .map(|f| (ByteCode::Intrinsic0(f), vec![]))
-    } else if *n_args == 1 {
-        INTRINSICS1
-            .get(&ident.0)
-            .cloned()
-            .map(|f| (ByteCode::Intrinsic1(f), vec![ArgType::Value]))
-    } else if *n_args == 2 {
-        INTRINSICS2.get(&ident.0).cloned().map(|f| {
-            (
-                ByteCode::Intrinsic2(f),
-                vec![ArgType::Value, ArgType::Value],
-            )
-        })
-    } else if *n_args == 3 {
-        INTRINSICS3.get(&ident.0).cloned().map(|f| {
-            (
-                ByteCode::Intrinsic3(f),
-                vec![ArgType::Value, ArgType::Value, ArgType::Value],
-            )
-        })
-    } else {
-        None
-    }
-}
+) -> Option<(ByteCode, Vec<ArgType>)> { panic!("STUB: not implemented") }
 
-pub(crate) fn truthy(value: Value) -> bool {
-    !matches!(value, Value::Null | Value::Boolean(false))
-}
+pub(crate) fn truthy(value: Value) -> bool { panic!("STUB: not implemented") }
 
-fn error(value: Value) -> Result<Value> {
-    Err(QueryExecutionError::UserDefinedError(value))
-}
+fn error(value: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn error1(_: Value, arg: Value) -> Result<Value> {
-    error(arg)
-}
+fn error1(_: Value, arg: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn get_type(context: Value) -> Result<Value> {
-    let ret = match context {
-        Value::Null => "null",
-        Value::Boolean(_) => "boolean",
-        Value::Number(_) => "number",
-        Value::String(_) => "string",
-        Value::Array(_) => "array",
-        Value::Object(_) => "object",
-    };
-    Ok(Value::String(Rc::new(ret.to_string())))
-}
+fn get_type(context: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn length(context: Value) -> Result<Value> {
-    Ok(Value::number(match context {
-        Value::Null => 0,
-        Value::Boolean(_) => return Err(QueryExecutionError::InvalidArgType("length", context)),
-        Value::Number(n) => return Ok(n.abs().into()),
-        Value::String(s) => s.chars().count(),
-        Value::Array(a) => a.len(),
-        Value::Object(o) => o.len(),
-    }))
-}
+fn length(context: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn utf8_byte_length(context: Value) -> Result<Value> {
-    match context {
-        Value::String(s) => Ok(Value::number(s.len())),
-        _ => Err(QueryExecutionError::InvalidUTF8ByteLength(context)),
-    }
-}
+fn utf8_byte_length(context: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn keys_unsorted(context: Value) -> Result<Value> {
-    match context {
-        Value::Array(arr) => Ok((0..arr.len()).map(Value::number).collect::<Array>().into()),
-        Value::Object(obj) => Ok(obj
-            .keys()
-            .map(|k| k.to_string().into())
-            .collect::<Array>()
-            .into()),
-        _ => Err(QueryExecutionError::InvalidArgType(
-            "keys_unsorted",
-            context,
-        )),
-    }
-}
+fn keys_unsorted(context: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn keys(context: Value) -> Result<Value> {
-    match context {
-        Value::Array(arr) => Ok((0..arr.len()).map(Value::number).collect::<Array>().into()),
-        Value::Object(obj) => Ok(obj
-            .keys()
-            .sorted_unstable()
-            .map(|k| k.to_string().into())
-            .collect::<Array>()
-            .into()),
-        _ => Err(QueryExecutionError::InvalidArgType("keys", context)),
-    }
-}
+fn keys(context: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn has(context: Value, index: Value) -> Result<Value> {
-    Ok(match (context, index) {
-        (Value::Array(arr), Value::Number(n)) => {
-            if let Some(n) = n.to_usize() {
-                n < arr.len()
-            } else {
-                false
-            }
-        }
-        (Value::Object(obj), Value::String(key)) => obj.get(&*key).is_some(),
-        _ => false,
-    }
-    .into())
-}
+fn has(context: Value, index: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn contains(context: Value, element: Value) -> Result<Value> {
-    fn contains_rec(lhs: &Value, rhs: &Value) -> Result<bool> {
-        Ok(match (lhs, rhs) {
-            (Value::Null, Value::Null) => true,
-            (Value::Boolean(lhs), Value::Boolean(rhs)) if lhs == rhs => true,
-            (Value::Number(lhs), Value::Number(rhs)) => lhs == rhs, // TODO: nan handling in JQ semantics...
-            (Value::String(lhs), Value::String(rhs)) => lhs.contains(rhs.as_ref()),
-            (Value::Array(lhs), Value::Array(rhs)) => rhs
-                .iter()
-                .all(|r| lhs.iter().any(|l| contains_rec(l, r).unwrap_or(false))),
-            (Value::Object(lhs), Value::Object(rhs)) => rhs.iter().all(|(k, r)| {
-                lhs.get(k)
-                    .map(|l| contains_rec(l, r).unwrap_or(false))
-                    .unwrap_or(false)
-            }),
-            (_, _) => {
-                return Err(QueryExecutionError::InvalidArgType(
-                    "contains",
-                    Array::from_vec(vec![lhs.clone(), rhs.clone()]).into(),
-                ))
-            }
-        })
-    }
-    contains_rec(&context, &element).map(Into::into)
-}
+fn contains(context: Value, element: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn sort(context: Value) -> Result<Value> {
-    let arr = match context {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("sort", context)),
-    };
-    let mut arr = arr.into_iter().collect_vec();
-    arr.sort();
-    Ok(Array::from_vec(arr).into())
-}
+fn sort(context: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn reverse(context: Value) -> Result<Value> {
-    let arr = match context {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("reverse", context)),
-    };
-    let mut arr = arr.into_iter().collect_vec();
-    arr.reverse();
-    Ok(Array::from_vec(arr).into())
-}
+fn reverse(context: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-pub(crate) fn min_by(context: Value, keys: Value) -> Result<Value> {
-    let arr = match context {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("min_by", context)),
-    };
-    let keys = match keys {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("min_by", keys)),
-    };
-    if arr.len() != keys.len() {
-        return Err(QueryExecutionError::LengthMismatch("min_by"));
-    }
-    Ok(keys
-        .into_iter()
-        .zip(arr)
-        .min_by(|(lhs, _), (rhs, _)| lhs.cmp(rhs))
-        .map_or(Value::Null, |(_, v)| v))
-}
+pub(crate) fn min_by(context: Value, keys: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-pub(crate) fn max_by(context: Value, keys: Value) -> Result<Value> {
-    let arr = match context {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("max_by", context)),
-    };
-    let keys = match keys {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("max_by", keys)),
-    };
-    if arr.len() != keys.len() {
-        return Err(QueryExecutionError::LengthMismatch("max_by"));
-    }
-    Ok(keys
-        .into_iter()
-        .zip(arr)
-        .max_by(|(lhs, _), (rhs, _)| lhs.cmp(rhs))
-        .map_or(Value::Null, |(_, v)| v))
-}
+pub(crate) fn max_by(context: Value, keys: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-pub(crate) fn group_by(context: Value, keys: Value) -> Result<Value> {
-    let arr = match context {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("group_by", context)),
-    };
-    let keys = match keys {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("group_by", keys)),
-    };
-    if arr.len() != keys.len() {
-        return Err(QueryExecutionError::LengthMismatch("group_by"));
-    }
-    let mut arr: Vec<(Value, Value)> = keys.into_iter().zip(arr).collect();
-    arr.sort_by(|(lhs, _), (rhs, _)| lhs.cmp(rhs));
-    let arr = arr
-        .into_iter()
-        .fold::<(Option<Value>, Vec<Vec<Value>>), _>(
-            (None, Vec::new()),
-            |(prev_key, mut groups), (key, value)| {
-                if prev_key.is_some_and(|prev_key| prev_key == key) {
-                    groups.last_mut().expect("Shouldn't be empty").push(value);
-                } else {
-                    groups.push(vec![value]);
-                }
-                (Some(key), groups)
-            },
-        )
-        .1
-        .into_iter()
-        .map(Array::from_vec)
-        .map(Into::into)
-        .collect_vec();
-    Ok(Array::from_vec(arr).into())
-}
+pub(crate) fn group_by(context: Value, keys: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-pub(crate) fn unique_by(context: Value, keys: Value) -> Result<Value> {
-    let arr = match context {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("unique_by", context)),
-    };
-    let keys = match keys {
-        Value::Array(arr) => make_owned(arr),
-        _ => return Err(QueryExecutionError::InvalidArgType("unique_by", keys)),
-    };
-    if arr.len() != keys.len() {
-        return Err(QueryExecutionError::LengthMismatch("unique_by"));
-    }
-    let mut arr: Vec<(Value, Value)> = keys.into_iter().zip(arr).collect();
-    arr.sort_by(|(lhs, _), (rhs, _)| lhs.cmp(rhs));
-    let arr = arr
-        .into_iter()
-        .fold::<(Option<Value>, Vec<Value>), _>(
-            (None, Vec::new()),
-            |(prev_key, mut values), (key, value)| {
-                if prev_key.is_none_or(|prev_key| prev_key != key) {
-                    values.push(value);
-                }
-                (Some(key), values)
-            },
-        )
-        .1
-        .into_iter()
-        .collect_vec();
-    Ok(Array::from_vec(arr).into())
-}
+pub(crate) fn unique_by(context: Value, keys: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn indices(context: Value, s: Value) -> Result<Value> {
-    let ret = match (context, s) {
-        (Value::Null, _) => Value::Null,
-        (Value::String(lhs), Value::String(rhs)) => Array::from_vec(if rhs.is_empty() {
-            vec![]
-        } else {
-            lhs.match_indices(rhs.as_ref())
-                .map(|(pos, _)| Value::Number(pos.into()))
-                .collect()
-        })
-        .into(),
-        (Value::Array(lhs), Value::Array(rhs)) => Array::from_vec(if rhs.is_empty() {
-            vec![]
-        } else {
-            lhs.windows(rhs.len())
-                .enumerate()
-                .filter(|(_, lhs)| lhs.iter().eq(rhs.iter())) // TODO: NaN
-                .map(|(pos, _)| Value::Number(pos.into()))
-                .collect()
-        })
-        .into(),
-        (Value::Array(lhs), rhs) => Array::from_vec(
-            lhs.iter()
-                .enumerate()
-                .filter(|(_, v)| *v == &rhs) // TODO: NaN
-                .map(|(pos, _)| Value::Number(pos.into()))
-                .collect(),
-        )
-        .into(),
-        (context, _) => return Err(QueryExecutionError::InvalidArgType("indices", context)),
-    };
-    Ok(ret)
-}
+fn indices(context: Value, s: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn starts_with(context: Value, s: Value) -> Result<Value> {
-    match (context, s) {
-        (Value::String(lhs), Value::String(rhs)) => Ok(lhs.starts_with(rhs.as_ref()).into()),
-        (context, _) => Err(QueryExecutionError::InvalidArgType("startswith", context)),
-    }
-}
+fn starts_with(context: Value, s: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn ends_with(context: Value, s: Value) -> Result<Value> {
-    match (context, s) {
-        (Value::String(lhs), Value::String(rhs)) => Ok(lhs.ends_with(rhs.as_ref()).into()),
-        (context, _) => Err(QueryExecutionError::InvalidArgType("endswith", context)),
-    }
-}
+fn ends_with(context: Value, s: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn split1(context: Value, s: Value) -> Result<Value> {
-    match (context, s) {
-        (Value::String(lhs), Value::String(rhs)) => Ok(string::split(lhs.as_ref(), rhs.as_ref())),
-        (context, _) => Err(QueryExecutionError::InvalidArgType("split", context)),
-    }
-}
+fn split1(context: Value, s: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn binary_search(context: Value, x: Value) -> Result<Value> {
-    match context {
-        Value::Array(arr) => Ok(match arr.binary_search(&x) {
-            Ok(i) => Value::number(i),
-            Err(i) => Value::number(-1 - (i as isize)),
-        }),
-        _ => Err(QueryExecutionError::InvalidArgType("bsearch", context)),
-    }
-}
+fn binary_search(context: Value, x: Value) -> Result<Value> { panic!("STUB: not implemented") }
 
-fn format(context: Value, s: Value) -> Result<Value> {
-    match (context, s) {
-        (lhs, Value::String(fmt)) => (stringifier(&fmt)
-            .ok_or(QueryExecutionError::UnknownStringFormatter(fmt))?
-            .func)(lhs),
-        (_, s) => Err(QueryExecutionError::InvalidArgType("format", s)),
-    }
-}
+fn format(context: Value, s: Value) -> Result<Value> { panic!("STUB: not implemented") }
